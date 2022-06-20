@@ -18,6 +18,7 @@ class OnboardingViewController: UIViewController {
         super.viewDidLoad()
         createSlides()
     }
+    
     private func createSlides() {
         self.slides.append(OnboardingSlide(image: UIImage(systemName: "tv.and.mediabox"), title: "Movie", description: " "))
         self.slides.append(OnboardingSlide(image: UIImage(systemName: "magnifyingglass"), title: "Search", description: "Search every movie or TV show you want"))
@@ -31,7 +32,7 @@ class OnboardingViewController: UIViewController {
     }
     
     @IBAction func buttonPressed(_ sender: UIButton){
-        let controller = storyboard?.instantiateViewController(withIdentifier: "MainController") as! UINavigationController
+        let controller = storyboard?.instantiateViewController(withIdentifier: "TabBar") as! UITabBarController
         controller.modalPresentationStyle = .fullScreen
         controller.modalTransitionStyle = .crossDissolve
         present(controller, animated: true)

@@ -10,12 +10,11 @@ import UIKit
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        UINavigationBar.appearance().setBackgroundImage(UIImage(), for: .default)
+        UINavigationBar.appearance().setBackgroundImage(UIImage(named: "111"), for: .default)
         UINavigationBar.appearance().shadowImage = UIImage()
-        UINavigationBar.appearance().tintColor = .black
+        UINavigationBar.appearance().tintColor = UIColor.white
+        
         return true
     }
 
