@@ -17,6 +17,8 @@ class HomeViewController: UIViewController {
     
     var listOfTrendingMovies: [TrendingMovie] = []
     
+    
+    
     @IBOutlet weak var upcomingMovieCollectionView: UICollectionView!
     
     @IBOutlet weak var nowPlayingMovieCollectionView: UICollectionView!
@@ -26,33 +28,18 @@ class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureCells()
-}
-    
-    
-   
-    
-    
-    
+    }
     
     private func configureCells() {
-        trendingCellConfigure()
+        registerCells()
         requestTrendingMovies()
-        nowPlayingCellConfigure()
         requestNowPlayingMovies()
-        upcomingCellConfigure()
         requestUpcomingMovies()
        
-       
-        
     }
-    private func nowPlayingCellConfigure() {
+    private func registerCells() {
         nowPlayingMovieCollectionView.register(UINib(nibName: "NowPlayingMovieCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "NowPlayingMovieCollectionViewCell")
-    }
-    private func trendingCellConfigure() {
         trendingMovieCollectionView.register(UINib(nibName: "TrendingMovieCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "TrendingMovieCollectionViewCell")
-        //trendingMovieCollectionView.contentInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
-    }
-    private func upcomingCellConfigure() {
         upcomingMovieCollectionView.register(UINib(nibName: "UpcomingMovieCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "UpcomingMovieCollectionViewCell")
     }
     private func configureCollectionView(){
@@ -88,6 +75,22 @@ extension HomeViewController: UICollectionViewDataSource , UICollectionViewDeleg
         
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let controller = storyboard?.instantiateViewController(withIdentifier: "MovieInfoViewController") as! MovieInfoViewController
+        //controller.modalPresentationStyle = .fullScreen
+        switch collectionView {
+        case nowPlayingMovieCollectionView:
+            controller.movieID = listOfNowPlayingMovies[indexPath.row].id!
+        case trendingMovieCollectionView:
+            controller.movieID = listOfTrendingMovies[indexPath.row].id!
+        case upcomingMovieCollectionView:
+            controller.movieID = listOfUpcomingMovies[indexPath.row].id!
+        default:
+            return
+        }
+        navigationController?.present(controller, animated: true)
+    }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch collectionView {
         case trendingMovieCollectionView:
@@ -116,11 +119,11 @@ extension HomeViewController: UICollectionViewDataSource , UICollectionViewDeleg
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         switch collectionView {
         case nowPlayingMovieCollectionView:
-            return CGSize(width: 200, height: 300)
+            return CGSize(width: Constants().screenWidth()/1.15, height: Constants().screenHeight()/3)
         case trendingMovieCollectionView:
-            return CGSize(width: 200, height: 300)
+            return CGSize(width: Constants().screenWidth()/1.15, height: Constants().screenHeight()/3)
         case upcomingMovieCollectionView:
-            return CGSize(width: 225, height: 440)
+            return CGSize(width: Constants().screenWidth()/1.8, height: Constants().screenHeight()/2)
         default:
             return CGSize(width: 200, height: 250)
         }
@@ -130,7 +133,7 @@ extension HomeViewController: UICollectionViewDataSource , UICollectionViewDeleg
     // MARK: - NETWORKING
     
     func requestUpcomingMovies() {
-        AF.request("http://localhost:5294/UpcomingMovies", method: .get).responseJSON { response in
+        AF.request("https://tmdbapi.azurewebsites.net/UpcomingMovies", method: .get).responseJSON { response in
             let jsonDecoder = JSONDecoder()
             guard let responseData = response.data else { return }
             if let responseModel = try! jsonDecoder.decode(UpcomingMovieModel?.self, from: responseData) {
@@ -143,7 +146,7 @@ extension HomeViewController: UICollectionViewDataSource , UICollectionViewDeleg
     }
     
     func requestNowPlayingMovies() {
-        AF.request("http://localhost:5294/NowPlayingMovies", method: .get).responseJSON { response in
+        AF.request("https://tmdbapi.azurewebsites.net/NowPlayingMovies", method: .get).responseJSON { response in
             let jsonDecoder = JSONDecoder()
             guard let responseData = response.data else { return }
             if let responseModel = try! jsonDecoder.decode(NowPlayingMovieModel?.self, from: responseData) {
@@ -155,7 +158,7 @@ extension HomeViewController: UICollectionViewDataSource , UICollectionViewDeleg
         }
     }
     func requestTrendingMovies() {
-        AF.request("http://localhost:5294/TrendingMovies", method: .get).responseJSON { response in
+        AF.request("https://tmdbapi.azurewebsites.net/TrendingMovies", method: .get).responseJSON { response in
             let jsonDecoder = JSONDecoder()
             guard let responseData = response.data else { return }
             if let responseModel = try! jsonDecoder.decode(TrendingMovieModel?.self, from: responseData) {
@@ -167,3 +170,4 @@ extension HomeViewController: UICollectionViewDataSource , UICollectionViewDeleg
         }
     }
 }
+

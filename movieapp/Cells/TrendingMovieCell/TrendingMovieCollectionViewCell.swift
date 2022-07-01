@@ -19,7 +19,7 @@ class TrendingMovieCollectionViewCell: UICollectionViewCell {
         guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + data.poster_path!) else { return }
         self.trendingMovieImage.sd_setImage(with: imageUrl)
         self.trendingMovieTitle.text = data.title ?? "NO DATA"
-        self.trendingMovieRating.text = "Рейтинг: \(data.vote_average!)"
+        self.trendingMovieRating.text = "\(data.vote_average!)"
     }
 
 }

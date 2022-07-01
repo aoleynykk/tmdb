@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import Alamofire
 class NowPlayingMovieCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var nowPlayingMovieImage: UIImageView!
@@ -19,6 +19,7 @@ class NowPlayingMovieCollectionViewCell: UICollectionViewCell {
         guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + data.poster_path!) else { return }
         self.nowPlayingMovieImage.sd_setImage(with: imageUrl)
         self.nowPlayingMovieTitle.text = data.title ?? "NO DATA"
-        self.nowPlayingMovieRating.text = "Рейтинг: \(data.vote_average!)"
+        self.nowPlayingMovieRating.text = "\(data.vote_average!)"
+        
     }
 }
