@@ -11,14 +11,13 @@ class NowPlayingMovieCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var nowPlayingMovieImage: UIImageView!
     
-    @IBOutlet weak var nowPlayingMovieTitle: UILabel!
-    
-    @IBOutlet weak var nowPlayingMovieRating: UILabel!
-    
-    func setup(data: NowPlayingMovie) {
-        guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + data.poster_path!) else { return }
-        self.nowPlayingMovieImage.sd_setImage(with: imageUrl)
-        self.nowPlayingMovieTitle.text = data.title ?? "NO DATA"
-        self.nowPlayingMovieRating.text = "Рейтинг: \(data.vote_average!)"
+    func setup(data: MainScreenMovie) {
+        if (data.poster_path != nil) {
+            guard let imageString = data.poster_path else { return }
+            guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + imageString) else { return }
+            self.nowPlayingMovieImage.sd_setImage(with: imageUrl)
+        } else {
+            self.nowPlayingMovieImage.image = UIImage(named: "no_image")
+        }
     }
 }

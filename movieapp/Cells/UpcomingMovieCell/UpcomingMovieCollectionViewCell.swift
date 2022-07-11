@@ -12,14 +12,14 @@ class UpcomingMovieCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var upcomingMovieImage: UIImageView!
     
-    @IBOutlet weak var upcomingMovieTitle: UILabel!
     
-    @IBOutlet weak var movieReleaseDate: UILabel!
-    
-    func setup(data: UpcomingMovie) {
-        guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + data.poster_path!) else { return }
-        self.upcomingMovieImage.sd_setImage(with: imageUrl)
-        self.upcomingMovieTitle.text = data.title ?? "NO DATA"
-        self.movieReleaseDate.text = data.release_date ?? "NO DATA"
+    func setup(data: MainScreenMovie) {
+        if (data.poster_path != nil) {
+            guard let imageString = data.poster_path else { return }
+            guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + imageString) else { return }
+            self.upcomingMovieImage.sd_setImage(with: imageUrl)
+        } else {
+            self.upcomingMovieImage.image = UIImage(named: "no_image")
+        }
     }
 }

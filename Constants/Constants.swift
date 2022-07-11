@@ -6,7 +6,19 @@
 //
 
 import Foundation
+import UIKit
 
 struct Constants {
-    let url = "https://api.themoviedb.org/3/trending/all/day?api_key=ab04cd0db471f8aec7ec3b6be80f900c"
+    let apiKey = "api_key=ab04cd0db471f8aec7ec3b6be80f900c"
+    let address = "https://api.themoviedb.org"
+    let empty = "NO DATA"
+    let lang = "&language=en-US"
+    
+    func screenHeight() -> CGFloat {
+        return UIScreen.main.bounds.size.height
+    }
+    
+    func screenWidth() -> CGFloat {
+        return UIScreen.main.bounds.size.width
+    }
 }

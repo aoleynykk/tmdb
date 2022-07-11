@@ -8,77 +8,122 @@
 import UIKit
 
 class SearchViewController: UIViewController {
-
+    
+    var movieId: Int = 0
+    
+    var networkManager = NetworkManager()
+    
+    var listOfSearchingFilms: [SearchingMovie] = [ ]
+    
+    var listOfSearchingTVShows: [SearchingTVShow] = []
+    
+    var listOfSearchigActors: [SearchingActor] = []
+    
+    @IBOutlet weak var itemToSearch: UISegmentedControl!
+    
     @IBOutlet weak var searchBar: UISearchBar!
     
-    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchCollectionView: UICollectionView!
     
-    let data = ["Alex", "John", "Anna", "Anet", "jake", "jimmy", "anton", "janet", "Timy", "Arnold", "Jacob", "Rick", "Mia", "Pen", "Josh", "Donald"]
-    
-    var searchedData: [String] = [ ]
-    
-    var isSearching = true
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-       
+    @IBAction func segmentChanged(_ sender: Any) {
+        clearTables()
     }
-    
 }
 
-extension SearchViewController: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+extension SearchViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        switch(self.itemToSearch.selectedSegmentIndex) {
+        case 0:
+            return self.listOfSearchingFilms.count
+        case 1:
+            return self.listOfSearchingTVShows.count
+        case 2:
+            return self.listOfSearchigActors.count
+        default :
+            return 0
+        }
         
-        if !isSearching {
-            return data.count
-        } else {
-            return searchedData.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch(self.itemToSearch.selectedSegmentIndex) {
+        case 0:
+            let nextController = storyboard?.instantiateViewController(withIdentifier: "MovieInfoViewController") as! MovieInfoViewController
+            nextController.movieId = listOfSearchingFilms[indexPath.row].id!
+            navigationController?.show(nextController, sender: nil)
+        case 1:
+            let nextController = storyboard?.instantiateViewController(withIdentifier: "TVShowInfoViewController") as! TVShowInfoViewController
+            nextController.tvShowId = listOfSearchingTVShows[indexPath.row].id!
+            navigationController?.show(nextController, sender: nil)
+        case 2:
+            let nextController = storyboard?.instantiateViewController(withIdentifier: "ActorInfoViewController") as! ActorInfoViewController
+            nextController.id = listOfSearchigActors[indexPath.row].id!
+            navigationController?.show(nextController, sender: nil)
+        default :
+            return
         }
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath)
-        
-        if !isSearching {
-            cell.textLabel?.text = data[indexPath.row]
-        } else {
-            cell.textLabel?.text = searchedData[indexPath.row]
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = searchCollectionView.dequeueReusableCell(withReuseIdentifier: "SearchCollectionViewCell", for: indexPath) as? SearchCollectionViewCell else { return UICollectionViewCell() }
+        switch(self.itemToSearch.selectedSegmentIndex) {
+        case 0:
+            cell.setup(data: listOfSearchingFilms[indexPath.row])
+        case 1:
+            if (listOfSearchingTVShows[indexPath.row].poster_path != nil) {
+                guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + listOfSearchingTVShows[indexPath.row].poster_path!) else { return UICollectionViewCell() }
+                cell.searchImage.sd_setImage(with: imageUrl)
+            } else {
+                cell.searchImage.image = UIImage(named: "no_image")
+                cell.searchImage.contentMode = .scaleAspectFill
+            }
+        case 2:
+            if (listOfSearchigActors[indexPath.row].profile_path != nil) {
+                guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + listOfSearchigActors[indexPath.row].profile_path!) else { return UICollectionViewCell() }
+                cell.searchImage.sd_setImage(with: imageUrl)
+            } else {
+                cell.searchImage.image = UIImage(named: "no_image")
+                cell.searchImage.contentMode = .scaleAspectFill
+            }
+        default :
+            return UICollectionViewCell()
         }
+        
         return cell
     }
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        CGSize(width: Constants().screenWidth()/2.2, height: Constants().screenHeight()/3.2)
+    }
+    
 }
 
 extension SearchViewController: UISearchBarDelegate {
-    
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self.searchedData.removeAll()
         
-        guard searchText != "" || searchText != " " else {
-            return
-        }
+        let searchingText = searchText.replacingOccurrences(of: " ", with: "%20")
         
-        for item in data {
-            let text = searchText.lowercased()
-            let isArrContain = item.lowercased().range(of: text)
-            
-            if isArrContain != nil {
-                searchedData.append(item)
-            }
-        }
-        
-        if searchBar.text == "" {
-            isSearching = false
-            DispatchQueue.main.async{
-            self.tableView.reloadData()
-            }
-        } else {
-            isSearching = true
-            searchedData = data.filter({$0.contains(searchBar.text ?? "")})
-            DispatchQueue.main.async{
-            self.tableView.reloadData()
-            }
-        }
+        search(name: searchingText.lowercased())
     }
     
+    private func search(name: String) {
+        switch(self.itemToSearch.selectedSegmentIndex) {
+        case 0:
+            NetworkManager().search(infoRequest: "/3/search/movie", nameOfMovie: name, model: SearchingMovieModel?.self) { result in
+                self.listOfSearchingFilms = result?.results ?? []
+                self.searchCollectionView.reloadData()
+            }
+        case 1:
+            NetworkManager().search(infoRequest: "/3/search/tv", nameOfMovie: name, model: SearchingTVShowsModel?.self) { result in
+                self.listOfSearchingTVShows = result?.results ?? []
+                self.searchCollectionView.reloadData()
+            }
+        case 2:
+            NetworkManager().search(infoRequest: "/3/search/person", nameOfMovie: name, model: SearchingActorModel?.self) { result in
+                self.listOfSearchigActors = result?.results ?? []
+                self.searchCollectionView.reloadData()
+            }
+        default:
+            return
+        }
+    }
 }
