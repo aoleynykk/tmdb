@@ -9,6 +9,8 @@ import UIKit
 
 class HomeViewController: UIViewController {
     
+    let networkManager = NetworkManager()
+        
     var listOfUpcomingMovies: [MainScreenMovie] = []
     
     var listOfNowPlayingMovies: [MainScreenMovie] = []
@@ -21,14 +23,16 @@ class HomeViewController: UIViewController {
     
     @IBOutlet weak var trendingMovieCollectionView: UICollectionView!
     
+    // MARK: - ViewController Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         configureCells()
-        
     }
     
+    //MARK: - Private Funcs
+    
     private func configureCells() {
-        let networkManager = NetworkManager()
         networkManager.mainScreenMovieRequest(infoRequest: "/3/movie/upcoming", model: MainScreenMovieModel?.self) { response in
             self.listOfUpcomingMovies = response?.results ?? []
             self.upcomingMovieCollectionView.reloadData()
@@ -45,36 +49,8 @@ class HomeViewController: UIViewController {
         }
     }
 }
-extension HomeViewController: UICollectionViewDataSource , UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+extension HomeViewController: UICollectionViewDataSource {
     
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        switch collectionView {
-        case upcomingMovieCollectionView:
-            return self.listOfUpcomingMovies.count
-        case nowPlayingMovieCollectionView:
-            return self.listOfNowPlayingMovies.count
-        case trendingMovieCollectionView:
-            return self.listOfTrendingMovies.count
-        default:
-            return 0
-        }
-        
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let nextController = storyboard?.instantiateViewController(withIdentifier: "MovieInfoViewController") as! MovieInfoViewController
-        switch collectionView {
-        case nowPlayingMovieCollectionView:
-            nextController.movieId = listOfNowPlayingMovies[indexPath.row].id!
-        case trendingMovieCollectionView:
-            nextController.movieId = listOfTrendingMovies[indexPath.row].id!
-        case upcomingMovieCollectionView:
-            nextController.movieId = listOfUpcomingMovies[indexPath.row].id!
-        default:
-            return
-        }
-        navigationController?.show(nextController, sender: nil)
-    }
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch collectionView {
         case trendingMovieCollectionView:
@@ -90,21 +66,50 @@ extension HomeViewController: UICollectionViewDataSource , UICollectionViewDeleg
             let cell = upcomingMovieCollectionView.dequeueReusableCell(withReuseIdentifier: "UpcomingMovieCollectionViewCell", for: indexPath) as! UpcomingMovieCollectionViewCell
             cell.setup(data: self.listOfUpcomingMovies[indexPath.row])
             return cell
-        default:
-            return UICollectionViewCell()
-        }
-        
-        
-        
+        default: return UICollectionViewCell() }
     }
+}
+
+extension HomeViewController: UICollectionViewDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        switch collectionView {
+        case upcomingMovieCollectionView:
+            return self.listOfUpcomingMovies.count
+        case nowPlayingMovieCollectionView:
+            return self.listOfNowPlayingMovies.count
+        case trendingMovieCollectionView:
+            return self.listOfTrendingMovies.count
+        default: return 0 }
+    }
+    //MARK: Navigation to info page
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let nextController = storyboard?.instantiateViewController(withIdentifier: "MovieInfoViewController") as! MovieInfoViewController
+        switch collectionView {
+        case nowPlayingMovieCollectionView:
+            guard let transmittedId = listOfNowPlayingMovies[indexPath.row].id else { return }
+            nextController.movieId = transmittedId
+        case trendingMovieCollectionView:
+            guard let transmittedId = listOfTrendingMovies[indexPath.row].id else { return }
+            nextController.movieId = transmittedId
+        case upcomingMovieCollectionView:
+            guard let transmittedId = listOfUpcomingMovies[indexPath.row].id else { return }
+            nextController.movieId = transmittedId
+        default: return }
+        navigationController?.show(nextController, sender: nil)
+    }
+}
+
+extension HomeViewController: UICollectionViewDelegateFlowLayout {
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         switch collectionView {
         case nowPlayingMovieCollectionView:
-            return CGSize(width: Constants().screenWidth()*0.6, height: Constants().screenHeight()/2.5)
+            return CGSize(width: self.nowPlayingMovieCollectionView.frame.height/1.5, height: self.nowPlayingMovieCollectionView.frame.height)
         case trendingMovieCollectionView:
-            return CGSize(width: Constants().screenWidth()*0.6, height: Constants().screenHeight()/2.5)
+            return CGSize(width: self.trendingMovieCollectionView.frame.height/1.5, height: self.trendingMovieCollectionView.frame.height)
         case upcomingMovieCollectionView:
-            return CGSize(width: Constants().screenWidth()*0.7, height: Constants().screenHeight()/2.1)
+            return CGSize(width: self.upcomingMovieCollectionView.frame.height/1.5, height: self.upcomingMovieCollectionView.frame.height)
         default:
             return CGSize(width: 200, height: 250)
         }

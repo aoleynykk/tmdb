@@ -8,7 +8,8 @@
 import Foundation
 
 extension SearchViewController {
-    func clearTables() {
+    
+    func clearSearchTables() {
         self.listOfSearchingFilms.removeAll()
         self.listOfSearchigActors.removeAll()
         self.listOfSearchingTVShows.removeAll()

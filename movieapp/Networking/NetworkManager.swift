@@ -12,14 +12,13 @@ import youtube_ios_player_helper
 struct NetworkManager {
     
     let constants = Constants()
-    // - ??????
-    /*https://api.themoviedb.org/3/tv/453395/credits?api_key=ab04cd0db471f8aec7ec3b6be80f900c&language=en-US*/
-    func requstCastInfo<T: Decodable>(infoRequest: String, id: Int, model: T.Type, completion: @escaping (T) -> ()) {
+    // - !!!
+    func requestCastInfo<T: Decodable>(infoRequest: String, id: Int, model: T.Type, completion: @escaping (T) -> ()) {
         let address = constants.address
         let apiKey = constants.apiKey
         let lang = constants.lang
         let id = "\(id)"
-        let url = address + infoRequest + id + "credits?" + apiKey + lang
+        let url = address + infoRequest + id + "/credits?" + apiKey + lang
         AF.request(url).responseJSON { response in
             guard let responseData = response.data else { return }
             do {

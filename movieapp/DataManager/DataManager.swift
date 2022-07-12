@@ -14,7 +14,7 @@ struct DataManager {
     func save(movieId: Int) {
         let watchListMovie = WatchListMovie()
         watchListMovie.id = movieId
-       
+        
         try? realm?.write {
             realm?.add(watchListMovie)
         }
@@ -37,5 +37,4 @@ struct DataManager {
             }
         }
     }
-    
 }

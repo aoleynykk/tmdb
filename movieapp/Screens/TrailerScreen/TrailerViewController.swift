@@ -12,11 +12,15 @@ class TrailerViewController: UIViewController {
     
     @IBOutlet weak var movieTrailer: YTPlayerView!
     
+    let networkManager = NetworkManager()
+    
     var id = 0
+    
+    // MARK: - ViewController Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        NetworkManager().requestTrailer(id: id, trailer: movieTrailer)
+        networkManager.requestTrailer(id: id, trailer: movieTrailer)
     }
 }
 

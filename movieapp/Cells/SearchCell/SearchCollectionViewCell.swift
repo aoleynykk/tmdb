@@ -10,7 +10,7 @@ import UIKit
 class SearchCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var searchImage: UIImageView!
-    
+    //!!!!!!!!!!!!!!!!
     func setup(data: SearchingMovie) {
         if (data.poster_path != nil) {
             guard let imageString = data.poster_path else { return }

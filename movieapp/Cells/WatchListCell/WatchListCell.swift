@@ -9,6 +9,8 @@ import UIKit
 import Alamofire
 
 class WatchListCell: UITableViewCell {
+    
+    let networkManager = NetworkManager()
 
     @IBOutlet weak var watchListImage: UIImageView!
     
@@ -21,25 +23,21 @@ class WatchListCell: UITableViewCell {
     @IBOutlet weak var ratingImage: UIImageView!
     
     func setup(id: Int) {
-        AF.request("\(Constants().address)/3/movie/\(id)?api_key=\(Constants().apiKey)&\(Constants().lang)", method: .get).responseJSON { response in
-            let jsonDecoder = JSONDecoder()
-            guard let responseData = response.data else { return }
-            if let responseModel = try! jsonDecoder.decode(MovieInfoModel?.self, from: responseData) {
-                if (responseModel.poster_path != nil){
-                    guard let imageString = responseModel.poster_path else { return }
-                    guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + imageString) else { return }
-                    self.watchListImage.sd_setImage(with: imageUrl)
-                    self.watchListImage.contentMode = .scaleAspectFill
-                } else {
-                    self.watchListImage.image = UIImage(named: "no_image")
-                    self.watchListImage.contentMode = .scaleAspectFill
-                }
-                self.watchListTitle.text = responseModel.title ?? Constants().empty
-                //self.watchListDescription.text = responseModel.overview ?? Constants().empty
-                self.watchListRating.text = "\(responseModel.vote_average!)"
-                self.ratingImage.image = UIImage(systemName: "star.fill")
-                self.ratingImage.tintColor = .yellow
+        networkManager.requstInfo(infoRequest: "/3/movie/", id: id, model: MovieInfoModel?.self) { response in
+            if (response?.poster_path != nil){
+                guard let imageString = response?.poster_path else { return }
+                guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + imageString) else { return }
+                self.watchListImage.sd_setImage(with: imageUrl)
+                self.watchListImage.contentMode = .scaleAspectFill
+            } else {
+                self.watchListImage.image = UIImage(named: "no_image")
+                self.watchListImage.contentMode = .scaleAspectFill
             }
+            self.watchListTitle.text = response?.title ?? Constants().empty
+            //self.watchListDescription.text = responseModel.overview ?? Constants().empty
+            self.watchListRating.text = "\(response?.vote_average ?? 0)"
+            self.ratingImage.image = UIImage(systemName: "star.fill")
+            self.ratingImage.tintColor = .yellow
         }
     }
 }
