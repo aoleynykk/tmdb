@@ -2,7 +2,7 @@
 //  OnboardingCollectionViewCell.swift
 //  movieapp
 //
-//  Created by Олександр Олійник on 13.06.2022.
+//  Created by Олександр Олійник on 12.07.2022.
 //
 
 import UIKit
@@ -14,10 +14,9 @@ class OnboardingCollectionViewCell: UICollectionViewCell {
     
     @IBOutlet weak var descriptionLabel: UILabel!
     
-    func configureOnboardingSlide(data: OnboardingSlide){
+    func configureOnboardingSlide(data: OnboardingSlideModel){
         self.titleLabel.text = data.title
         self.descriptionLabel.text = data.description
         self.slideImageView.image = data.image
     }
 }
-
