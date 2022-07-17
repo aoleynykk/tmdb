@@ -15,8 +15,6 @@ class MovieInfoViewController: UIViewController {
     
     let dataManager = DataManager()
     
-    let networkManager = NetworkManager()
-    
     var cast: [Cast] = []
     
     var genresList: [Genres] = []
@@ -69,7 +67,7 @@ class MovieInfoViewController: UIViewController {
     // MARK: - Private Funcs
  
     private func setupMovieInfoPage(movieId: Int) {
-        networkManager.requstInfo(infoRequest: "/3/movie/", id: movieId, model: MovieInfoModel?.self) { [self] response in
+        NetworkManager.shared.requstInfo(infoRequest: "/3/movie/", id: movieId, model: MovieInfoModel?.self) { [self] response in
             if (response?.backdrop_path != nil){
                 guard let imageString = response?.backdrop_path else { return }
                 guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + imageString) else { return }
@@ -95,7 +93,7 @@ class MovieInfoViewController: UIViewController {
     }
     
     private func setupMovieCastCollectionView(movieId: Int) {
-        networkManager.requestCastInfo(infoRequest: "/3/movie/", id: movieId, model: CastModel?.self) { response in
+        NetworkManager.shared.requestCastInfo(infoRequest: "/3/movie/", id: movieId, model: CastModel?.self) { response in
             self.cast = response?.cast ?? []
             self.movieCastCollectionView.reloadData()
         }

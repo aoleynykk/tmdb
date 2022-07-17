@@ -11,8 +11,14 @@ import youtube_ios_player_helper
 
 struct NetworkManager {
     
+    static let shared = NetworkManager()
+    
     let constants = Constants()
+    
+    private init() { }
+    
     // - !!!
+    
     func requestCastInfo<T: Decodable>(infoRequest: String, id: Int, model: T.Type, completion: @escaping (T) -> ()) {
         let address = constants.address
         let apiKey = constants.apiKey

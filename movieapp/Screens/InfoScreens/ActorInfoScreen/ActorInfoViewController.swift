@@ -12,9 +12,7 @@ class ActorInfoViewController: UIViewController {
     var id: Int = 0
     
     let constants = Constants()
-    
-    var networkManager = NetworkManager()
-    
+        
     @IBOutlet weak var actorImage: UIImageView!
     
     @IBOutlet weak var actorName: UILabel!
@@ -35,7 +33,7 @@ class ActorInfoViewController: UIViewController {
     // MARK: - Private Funcs
     
     private func setupActorInfoPage(id: Int) {
-        networkManager.requstInfo(infoRequest: "/3/person/", id: id, model: ActorModel?.self) { [self] response in
+        NetworkManager.shared.requstInfo(infoRequest: "/3/person/", id: id, model: ActorModel?.self) { [self] response in
             if (response?.profile_path != nil) {
                 guard let imageString = response?.profile_path else { return }
                 guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + imageString) else { return }

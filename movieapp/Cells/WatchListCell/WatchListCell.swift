@@ -10,7 +10,7 @@ import Alamofire
 
 class WatchListCell: UITableViewCell {
     
-    let networkManager = NetworkManager()
+    //let networkManager = NetworkManager()
 
     @IBOutlet weak var watchListImage: UIImageView!
     
@@ -23,7 +23,7 @@ class WatchListCell: UITableViewCell {
     @IBOutlet weak var ratingImage: UIImageView!
     
     func setup(id: Int) {
-        networkManager.requstInfo(infoRequest: "/3/movie/", id: id, model: MovieInfoModel?.self) { response in
+        NetworkManager.shared.requstInfo(infoRequest: "/3/movie/", id: id, model: MovieInfoModel?.self) { response in
             if (response?.poster_path != nil){
                 guard let imageString = response?.poster_path else { return }
                 guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + imageString) else { return }

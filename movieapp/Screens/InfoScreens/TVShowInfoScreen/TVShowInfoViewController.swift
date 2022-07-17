@@ -12,9 +12,7 @@ class TVShowInfoViewController: UIViewController {
     var tvShowId = 0
     
     let constants = Constants()
-    
-    let networkManager = NetworkManager()
-    
+        
     var cast: [Cast] = []
     
     @IBOutlet weak var tvShowImage: UIImageView!
@@ -54,7 +52,7 @@ class TVShowInfoViewController: UIViewController {
     // MARK: - Private Funcs
     
     private func setupTVShowInfoPage(tvShowId: Int) {
-        networkManager.requstInfo(infoRequest: "/3/tv/", id: tvShowId, model: tvShowInfoModel?.self) { [self] response in
+        NetworkManager.shared.requstInfo(infoRequest: "/3/tv/", id: tvShowId, model: tvShowInfoModel?.self) { [self] response in
             if (response?.backdrop_path != nil){
                 guard let imageString = response?.backdrop_path else { return }
                 guard let imageUrl = URL(string: "https://image.tmdb.org/t/p/original" + imageString) else { return }
@@ -75,7 +73,7 @@ class TVShowInfoViewController: UIViewController {
     }
     
     private func setupTVShowCastCollectionView(tvShowId: Int) {
-        networkManager.requestCastInfo(infoRequest: "/3/tv/", id: tvShowId, model: CastModel?.self) { response in
+        NetworkManager.shared.requestCastInfo(infoRequest: "/3/tv/", id: tvShowId, model: CastModel?.self) { response in
             self.cast = response?.cast ?? []
             self.tvShowCastCollectionView.reloadData()
         }

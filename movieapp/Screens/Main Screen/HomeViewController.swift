@@ -8,9 +8,7 @@
 import UIKit
 
 class HomeViewController: UIViewController {
-    
-    let networkManager = NetworkManager()
-        
+            
     var listOfUpcomingMovies: [MainScreenMovie] = []
     
     var listOfNowPlayingMovies: [MainScreenMovie] = []
@@ -33,17 +31,17 @@ class HomeViewController: UIViewController {
     //MARK: - Private Funcs
     
     private func configureCells() {
-        networkManager.mainScreenMovieRequest(infoRequest: "/3/movie/upcoming", model: MainScreenMovieModel?.self) { response in
+        NetworkManager.shared.mainScreenMovieRequest(infoRequest: "/3/movie/upcoming", model: MainScreenMovieModel?.self) { response in
             self.listOfUpcomingMovies = response?.results ?? []
             self.upcomingMovieCollectionView.reloadData()
 
         }
-        networkManager.mainScreenMovieRequest(infoRequest: "/3/movie/now_playing", model: MainScreenMovieModel?.self) { response in
+        NetworkManager.shared.mainScreenMovieRequest(infoRequest: "/3/movie/now_playing", model: MainScreenMovieModel?.self) { response in
             self.listOfNowPlayingMovies = response?.results ?? []
             self.nowPlayingMovieCollectionView.reloadData()
 
         }
-        networkManager.mainScreenMovieRequest(infoRequest: "/3/trending/movie/week", model: MainScreenMovieModel?.self) { response in
+        NetworkManager.shared.mainScreenMovieRequest(infoRequest: "/3/trending/movie/week", model: MainScreenMovieModel?.self) { response in
             self.listOfTrendingMovies = response?.results ?? []
             self.trendingMovieCollectionView.reloadData()
         }

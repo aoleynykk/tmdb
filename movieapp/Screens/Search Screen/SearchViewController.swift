@@ -12,9 +12,7 @@ class SearchViewController: UIViewController {
     var movieId: Int = 0
     
     let constants = Constants()
-    
-    let networkManager = NetworkManager()
-    
+        
     var listOfSearchingFilms: [SearchingMovie] = [ ]
     
     var listOfSearchingTVShows: [SearchingTVShow] = []
@@ -119,17 +117,17 @@ extension SearchViewController: UISearchBarDelegate {
     private func search(name: String) {
         switch(self.itemToSearch.selectedSegmentIndex) {
         case 0:
-            networkManager.search(infoRequest: "/3/search/movie", nameOfMovie: name, model: SearchingMovieModel?.self) { result in
+            NetworkManager.shared.search(infoRequest: "/3/search/movie", nameOfMovie: name, model: SearchingMovieModel?.self) { result in
                 self.listOfSearchingFilms = result?.results ?? []
                 self.searchCollectionView.reloadData()
             }
         case 1:
-            networkManager.search(infoRequest: "/3/search/tv", nameOfMovie: name, model: SearchingTVShowsModel?.self) { result in
+            NetworkManager.shared.search(infoRequest: "/3/search/tv", nameOfMovie: name, model: SearchingTVShowsModel?.self) { result in
                 self.listOfSearchingTVShows = result?.results ?? []
                 self.searchCollectionView.reloadData()
             }
         case 2:
-            networkManager.search(infoRequest: "/3/search/person", nameOfMovie: name, model: SearchingActorModel?.self) { result in
+            NetworkManager.shared.search(infoRequest: "/3/search/person", nameOfMovie: name, model: SearchingActorModel?.self) { result in
                 self.listOfSearchigActors = result?.results ?? []
                 self.searchCollectionView.reloadData()
             }
